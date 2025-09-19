@@ -47,23 +47,7 @@ async def on_message(message):
     # ignore replies
     if message.reference is not None:
         return
-    
-    # replace https://x.com or https://twitter.com links with vxtwitter links
-    if "https://x.com" in message.content or "https://twitter.com" in message.content or "https://www.x.com" in message.content or "https://www.twitter.com" in message.content:
-        new_content = re.sub(r"https://(www\.)?(x|twitter)\.com/([a-zA-Z0-9_]+)/status/([0-9]+)", r"https://vxtwitter.com/\2/status/\4", message.content)
-        if new_content != message.content:
-            await message.delete()
-            await message.channel.send(f"{new_content}")
-        return
-    
-    # replace https://reddit.com links with vxreddit links
-    if "https://reddit.com" in message.content or "https://www.reddit.com" in message.content:
-        new_content = re.sub(r"https://(www\.)?reddit\.com/r/([a-zA-Z0-9_]+)/comments/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)", r"https://vxreddit.com/r/\2/comments/\3/\4", message.content)
-        if new_content != message.content:
-            await message.delete()
-            await message.channel.send(f"{new_content}")
-        return
-            
+
     # check who to ping
     other_user = USER_1 if message.author.id == USER_2 else USER_2
 
@@ -94,4 +78,27 @@ async def on_message(message):
     # update last ping time
     last_ping_time[other_user] = now
 
+    # replace https://x.com or https://twitter.com links with vxtwitter links
+    if "https://x.com" in message.content or "https://twitter.com" in message.content or "https://www.x.com" in message.content or "https://www.twitter.com" in message.content:
+        new_content = re.sub(
+            r"https://(www\.)?(x|twitter)\.com/([a-zA-Z0-9_]+)/status/([0-9]+)",
+            r"https://vxtwitter.com/\3/status/\4",
+            message.content
+        )
+        if new_content != message.content:
+            await message.delete()
+            await message.channel.send(f"{new_content}")
+        return
+    
+    # replace https://reddit.com links with vxreddit links
+    if "https://reddit.com" in message.content or "https://www.reddit.com" in message.content:
+        new_content = re.sub(
+            r"https://(www\.)?reddit\.com/r/([a-zA-Z0-9_]+)/comments/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)",
+            r"https://vxreddit.com/r/\2/comments/\3/\4",
+            message.content
+        )
+        if new_content != message.content:
+            await message.delete()
+            await message.channel.send(f"{new_content}")
+            
 client.run(TOKEN)
