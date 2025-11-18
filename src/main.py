@@ -78,27 +78,58 @@ async def on_message(message):
     # update last ping time
     last_ping_time[other_user] = now
 
-    # replace https://x.com or https://twitter.com links with vxtwitter links
+    # replace https://x.com or https://twitter.com links with fxtwitter links
     if "https://x.com" in message.content or "https://twitter.com" in message.content or "https://www.x.com" in message.content or "https://www.twitter.com" in message.content:
         new_content = re.sub(
             r"https://(www\.)?(x|twitter)\.com/([a-zA-Z0-9_]+)/status/([0-9]+)",
-            r"https://vxtwitter.com/\3/status/\4",
+            r"https://fxtwitter.com/\3/status/\4",
             message.content
         )
         if new_content != message.content:
+            match = re.search(r"https://(www\.)?(x|twitter)\.com/([a-zA-Z0-9_]+)/status/([0-9]+)", message.content)
+            if match:
+                original_link = f"https://{match.group(1) or ''}{'x' if match.group(2) == 'x' else 'twitter'}.com/{match.group(3)}/status/{match.group(4)}"
+                button = discord.ui.Button(style=discord.ButtonStyle.link, url=original_link, label="Open in X")
+                view = discord.ui.View()
+                view.add_item(button)
             await message.delete()
-            await message.channel.send(f"{new_content}")
+            await message.channel.send(f"{message.author.name}: {new_content}", view=view)
         return
     
     # replace https://reddit.com links with vxreddit links
     if "https://reddit.com" in message.content or "https://www.reddit.com" in message.content:
         new_content = re.sub(
-            r"https://(www\.)?reddit\.com/r/([a-zA-Z0-9_]+)/comments/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)",
-            r"https://vxreddit.com/r/\2/comments/\3/\4",
+            r"https://(www\.)?reddit\.com",
+            r"https://vxreddit.com",
             message.content
         )
         if new_content != message.content:
+            match = re.search(r"https://(www\.)?reddit\.com[^\s]*", message.content)
+            if match:
+                original_link = match.group(0)
+                button = discord.ui.Button(style=discord.ButtonStyle.link, url=original_link, label="Open in Reddit")
+                view = discord.ui.View()
+                view.add_item(button)
             await message.delete()
-            await message.channel.send(f"{new_content}")
+            await message.channel.send(f"{message.author.name}: {new_content}", view=view)
+            return
+    
+    # replace https://tiktok.com links with tnktok links
+    if "https://tiktok.com" in message.content or "https://www.tiktok.com" in message.content:
+        new_content = re.sub(
+            r"https://(www\.)?tiktok\.com",
+            r"https://\1tnktok.com",
+            message.content
+        )
+        if new_content != message.content:
+            match = re.search(r"https://(www\.)?tiktok\.com[^\s]*", message.content)
+            if match:
+                original_link = match.group(0)
+                button = discord.ui.Button(style=discord.ButtonStyle.link, url=original_link, label="Open in TikTok")
+                view = discord.ui.View()
+                view.add_item(button)
+                await message.delete()
+                await message.channel.send(content=f"{message.author.name}: {new_content}", view=view)
+            return
             
 client.run(TOKEN)
