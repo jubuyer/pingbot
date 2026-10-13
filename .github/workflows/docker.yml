@@ -1,0 +1,22 @@
+name: docker
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: jubuyer
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            jubuyer/pingbot:latest
+            jubuyer/pingbot:${{ github.sha }}

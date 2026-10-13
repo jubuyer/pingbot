@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: pinger
-    image: pinger
+    image: jubuyer/pingbot
     env_file:
       - .env    # loads env vars from file outside the image
     restart: unless-stopped
